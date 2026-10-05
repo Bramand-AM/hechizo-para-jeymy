@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¡Feliz Cumpleaños Mágico, Jeymy! | Hogwarts</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=MedievalSharp&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --house-primary: #740001;
+      --house-secondary: #D3A625;
+      --house-glow: rgba(211, 166, 37, 0.4);
+    }
+
+    body {
+      background: #05040a;
+      color: #F0E6D2;
+      font-family: 'MedievalSharp', cursive;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #space-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    #magic-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .moon {
+      position: fixed;
+      top: 35px;
+      left: 7%;
+      width: 110px;
+      height: 110px;
+      background: radial-gradient(circle at 35% 35%, #ffffff, #e2e8f0 50%, #cbd5e1 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 40px #ffffff, 0 0 80px rgba(226, 232, 240, 0.6), inset -12px -12px 25px rgba(0,0,0,0.2);
+      z-index: 2;
+    }
+
+    .mountains {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 220px;
+      z-index: 3;
+      pointer-events: none;
+      background: linear-gradient(to top, #020205 10%, transparent 100%);
+    }
+
+    .mountains-svg {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      fill: #080711;
+    }
+
+    .hedwig-owl {
+      position: fixed;
+      top: 50px;
+      right: 6%;
+      width: 105px;
+      filter: drop-shadow(0 0 14px rgba(255,255,255,0.45));
+      animation: floatOwl 4s ease-in-out infinite alternate;
+      z-index: 4;
+    }
+
+    @keyframes floatOwl {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(-18px) rotate(-4deg); }
+    }
+
+    .main-card {
+      background: rgba(13, 11, 20, 0.88);
+      border: 2.5px solid var(--house-secondary);
+      box-shadow: 0 0 35px var(--house-glow), inset 0 0 25px rgba(0,0,0,0.9);
+      backdrop-filter: blur(8px);
+      transition: all 0.5s ease;
+    }
+
+    .jeymy-gold-text {
+      font-family: 'Cinzel Decorative', serif;
+      background: linear-gradient(135deg, #FFE066 0%, #D3A625 50%, #FFF8D6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 15px rgba(211, 166, 37, 0.6);
+    }
+
+    .wand-wrapper {
+      cursor: pointer;
+      display: inline-block;
+      position: relative;
+    }
+
+    .wand {
+      width: 230px;
+      height: 12px;
+      background: linear-gradient(90deg, #2b1810 0%, #613318 70%, #d4b483 100%);
+      border-radius: 6px 16px 16px 6px;
+      box-shadow: 0 0 14px rgba(0,0,0,0.9), 0 0 7px #2b1810;
+      transform-origin: left center;
+      transition: transform 0.1s ease;
+      position: relative;
+    }
+
+    .wand::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 14px #fff, 0 0 24px var(--house-secondary);
+    }
+
+    .wand.cast-magic {
+      animation: waveWand 0.65s ease-in-out;
+    }
+
+    @keyframes waveWand {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(-25deg) translateY(-12px); }
+      50% { transform: rotate(18deg) translateY(6px); }
+      75% { transform: rotate(-12deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .house-badge {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: 'Cinzel Decorative', serif;
+    }
+
+    .house-badge.active {
+      transform: scale(1.08);
+      box-shadow: 0 0 22px currentColor;
+    }
+
+    .message-box {
+      background: rgba(248, 241, 222, 0.96);
+      color: #2b1d0c;
+      border: 2px dashed #8B4513;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.65);
+      transition: all 0.4s ease;
+      font-family: 'MedievalSharp', cursive;
+    }
+
+    .message-box::before { content: '✦'; position: absolute; top: 6px; left: 12px; color: #8B4513; font-size: 1.2rem; }
+    .message-box::after { content: '✦'; position: absolute; bottom: 6px; right: 12px; color: #8B4513; font-size: 1.2rem; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.3);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--house-secondary);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen py-8 px-4">
+
+  <!-- Canvas para Cielo Estrellado -->
+  <canvas id="space-canvas"></canvas>
+
+  <!-- Canvas para Magia y Partículas de la Varita -->
+  <canvas id="magic-canvas"></canvas>
+
+  <!-- Luna Llena Radiante -->
+  <div class="moon"></div>
+
+  <!-- Lechuza Hedwig con Carta para Jeymy -->
+  <svg class="hedwig-owl" viewBox="0 0 100 100">
+    <path d="M50,15 C35,15 25,28 25,45 C25,65 35,85 50,85 C65,85 75,65 75,45 C75,28 65,15 50,15 Z" fill="#F8F9FA"/>
+    <circle cx="40" cy="38" r="8" fill="#FFD700" />
+    <circle cx="40" cy="38" r="4" fill="#000" />
+    <circle cx="60" cy="38" r="8" fill="#FFD700" />
+    <circle cx="60" cy="38" r="4" fill="#000" />
+    <polygon points="50,44 46,52 54,52" fill="#D97706" />
+    <path d="M30,55 Q50,65 70,55" stroke="#E5E7EB" stroke-width="3" fill="none"/>
+    <path d="M32,68 Q50,78 68,68" stroke="#D1D5DB" stroke-width="3" fill="none"/>
+    <!-- Carta con sello de cera roja -->
+    <rect x="42" y="52" width="16" height="11" fill="#F59E0B" rx="1" stroke="#B45309" stroke-width="1"/>
+    <polygon points="42,52 50,58 58,52" fill="#D97706" />
+    <circle cx="50" cy="57" r="2" fill="#740001" />
+  </svg>
+
+  <!-- Silueta de Montañas de Hogwarts -->
+  <div class="mountains">
+    <svg class="mountains-svg" viewBox="0 0 1200 320" preserveAspectRatio="none">
+      <path d="M0,320 L0,220 L150,140 L280,210 L420,90 L580,240 L720,110 L890,230 L1040,120 L1200,200 L1200,320 Z"></path>
+      <path d="M0,320 L0,250 L100,190 L220,240 L350,150 L480,260 L650,170 L800,270 L950,180 L1100,230 L1200,260 L1200,320 Z" fill="#04030a" opacity="0.7"></path>
+    </svg>
+  </div>
+
+  <!-- Contenedor Principal de la Carta Mágica para Jeymy -->
+  <div class="main-card relative z-10 w-full max-w-2xl rounded-2xl p-6 md:p-8 text-center my-auto my-6">
+    
+    <!-- Encabezado Personalizado para Jeymy -->
+    <div class="mb-4">
+      <span class="text-xs uppercase tracking-widest text-amber-300/80 font-mono block mb-1">
+        ✦ Gran Escuela de Magia y Hechicería de Hogwarts ✦
+      </span>
+      <h1 class="text-3xl md:text-5xl font-black tracking-wide leading-tight mt-1">
+        ¡Feliz Cumpleaños, <span class="jeymy-gold-text">Jeymy</span>!
+      </h1>
+      <p class="text-sm md:text-base text-amber-100/80 mt-3 max-w-lg mx-auto">
+        Una fecha mágica para una maga extraordinaria. Haz clic en la varita para comenzar el encantamiento de tu gran día.
+      </p>
+    </div>
+
+    <!-- Sección Varita Mágica -->
+    <div class="my-6">
+      <div class="wand-wrapper inline-block" id="wand-container" onclick="castInitialSpell()">
+        <div class="wand mx-auto" id="wand"></div>
+      </div>
+      <p class="text-xs md:text-sm text-amber-200/90 mt-3 animate-pulse cursor-pointer" onclick="castInitialSpell()">
+        ✨ ¡Agita la varita de Jeymy para lanzar chispas mágicas! ✨
+      </p>
+    </div>
+
+    <!-- Selección de Casas de Hogwarts -->
+    <div class="mt-8">
+      <p class="text-xs md:text-sm text-amber-300 font-bold uppercase tracking-wider mb-3">
+        🏰 Jeymy, elige tu casa de Hogwarts para ver sus hechizos especiales:
+      </p>
+      
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-w-md mx-auto mb-6">
+        <button onclick="selectHouse('gryffindor')" id="btn-gryffindor" class="house-badge active px-3 py-2 rounded-lg text-xs md:text-sm font-bold bg-red-900/90 text-amber-300 border border-amber-400/60 hover:bg-red-800">
+          🦁 Gryffindor
+        </button>
+        <button onclick="selectHouse('slytherin')" id="btn-slytherin" class="house-badge px-3 py-2 rounded-lg text-xs md:text-sm font-bold bg-emerald-950/90 text-slate-300 border border-slate-400/60 hover:bg-emerald-900">
+          🐍 Slytherin
+        </button>
+        <button onclick="selectHouse('ravenclaw')" id="btn-ravenclaw" class="house-badge px-3 py-2 rounded-lg text-xs md:text-sm font-bold bg-blue-950/90 text-amber-600 border border-amber-700/60 hover:bg-blue-900">
+          🦅 Ravenclaw
+        </button>
+        <button onclick="selectHouse('hufflepuff')" id="btn-hufflepuff" class="house-badge px-3 py-2 rounded-lg text-xs md:text-sm font-bold bg-amber-500/90 text-slate-950 border border-slate-900/60 hover:bg-amber-400">
+          🦡 Hufflepuff
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel de Hechizos y Mensajes Personalizados -->
+    <div class="spells-section mt-4 hidden" id="spells-section">
+      <p class="text-xs md:text-sm text-amber-200/80 mb-3" id="house-instruction">
+        Jeymy, selecciona un hechizo para invocar tu deseo mágico de cumpleaños:
+      </p>
+      
+      <!-- Botones de hechizos dinámicos -->
+      <div class="flex flex-wrap gap-2 justify-center mb-5" id="spell-buttons-container">
+        <!-- Generado dinámicamente -->
+      </div>
+
+      <!-- Cuadro de Mensaje Principal -->
+      <div class="message-box relative p-5 md:p-6 rounded-xl min-h-[140px] flex items-center justify-center text-base md:text-lg leading-relaxed shadow-2xl" id="message-display">
+        ¡Jeymy, haz clic en cualquier hechizo para revelar un mensaje mágico dedicado a ti!
+      </div>
+    </div>
+
+    <!-- Túnica decorativa e insignia inferior -->
+    <div class="mt-7 flex justify-center items-center gap-3 opacity-80">
+      <svg class="w-8 h-8" viewBox="0 0 100 100">
+        <path d="M20,20 L35,10 L50,22 L65,10 L80,20 L90,90 L70,95 L50,40 L30,95 L10,90 Z" fill="#111827" stroke="#D3A625" stroke-width="2"/>
+        <polygon points="50,22 40,35 60,35" fill="#740001" />
+        <polygon points="50,22 45,35 55,35" fill="#D3A625" />
+      </svg>
+      <span class="text-xs text-amber-100/60 uppercase tracking-widest font-mono">
+        El Expreso de Hogwarts felicita a la bruja más genial: Jeymy
+      </span>
+    </div>
+
+  </div>
+
+  <script>
+    // Configuración del Canvas para Cielo Estrellado Parpadeante
+    const spaceCanvas = document.getElementById('space-canvas');
+    const spaceCtx = spaceCanvas.getContext('2d');
+    let stars = [];
+
+    function resizeSpaceCanvas() {
+      spaceCanvas.width = window.innerWidth;
+      spaceCanvas.height = window.innerHeight;
+      initStars();
+    }
+
+    function initStars() {
+      stars = [];
+      const count = Math.floor((spaceCanvas.width * spaceCanvas.height) / 2800);
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * spaceCanvas.width,
+          y: Math.random() * spaceCanvas.height * 0.82,
+          radius: Math.random() * 1.6 + 0.4,
+          alpha: Math.random(),
+          speed: Math.random() * 0.025 + 0.005,
+          dir: Math.random() > 0.5 ? 1 : -1
+        });
+      }
+    }
+
+    function animateStars() {
+      spaceCtx.clearRect(0, 0, spaceCanvas.width, spaceCanvas.height);
+      
+      stars.forEach(star => {
+        star.alpha += star.speed * star.dir;
+        if (star.alpha >= 1) { star.alpha = 1; star.dir = -1; }
+        if (star.alpha <= 0.15) { star.alpha = 0.15; star.dir = 1; }
+
+        spaceCtx.save();
+        spaceCtx.globalAlpha = star.alpha;
+        spaceCtx.fillStyle = "#ffffff";
+        spaceCtx.beginPath();
+        spaceCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        spaceCtx.fill();
+        spaceCtx.restore();
+      });
+
+      requestAnimationFrame(animateStars);
+    }
+
+    const magicCanvas = document.getElementById('magic-canvas');
+    const magicCtx = magicCanvas.getContext('2d');
+    let particles = [];
+
+    function resizeMagicCanvas() {
+      magicCanvas.width = window.innerWidth;
+      magicCanvas.height = window.innerHeight;
+    }
+
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color || '#D3A625';
+        this.size = Math.random() * 5.5 + 1.5;
+        this.speedX = (Math.random() - 0.5) * 8.5;
+        this.speedY = (Math.random() - 0.5) * 8.5;
+        this.life = 1;
+        this.decay = Math.random() * 0.02 + 0.015;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.life -= this.decay;
+      }
+
+      draw() {
+        magicCtx.save();
+        magicCtx.globalAlpha = Math.max(0, this.life);
+        magicCtx.fillStyle = this.color;
+        magicCtx.shadowBlur = 12;
+        magicCtx.shadowColor = this.color;
+        magicCtx.beginPath();
+        magicCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        magicCtx.fill();
+        magicCtx.restore();
+      }
+    }
+
+    function createExplosion(x, y, color, count = 45) {
+      for (let i = 0; i < count; i++) {
+        particles.push(new Particle(x, y, color));
+      }
+    }
+
+    function animateParticles() {
+      magicCtx.clearRect(0, 0, magicCanvas.width, magicCanvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].draw();
+        if (particles[i].life <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+      requestAnimationFrame(animateParticles);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeSpaceCanvas();
+      resizeMagicCanvas();
+    });
+
+    resizeSpaceCanvas();
+    resizeMagicCanvas();
+    animateStars();
+    animateParticles();
+
+    const housesData = {
+      gryffindor: {
+        primary: '#740001',
+        secondary: '#D3A625',
+        glow: 'rgba(211, 166, 37, 0.4)',
+        name: 'Gryffindor 🦁',
+        spells: [
+          { name: 'Lumos MAXIMA 💡', color: '#FFE066', text: '🎉 ¡Lumos Maxima para Jeymy! Que la valentía y el brillo deslumbrante de Gryffindor ilumine cada uno de tus pasos en este nuevo año de vida. ¡Feliz Cumpleaños, Jeymy!' },
+          { name: 'Patronus DE JEYMY 🦌', color: '#87CEEB', text: '✨ ¡El Patronus de Jeymy evoca los recuerdos más puros y felices! Que la luz y la protección de la magia te acompañen siempre en tus mejores aventuras.' },
+          { name: 'Alohomora SUEÑOS 🗝️', color: '#FFD700', text: '🗝️ ¡Alohomora! Abriendo de par en par todas las puertas hacia el éxito, la dicha y las grandes alegrías para la maga más valiente: ¡Jeymy!' }
+        ]
+      },
+      slytherin: {
+        primary: '#1A472A',
+        secondary: '#AAAAAA',
+        glow: 'rgba(170, 170, 170, 0.4)',
+        name: 'Slytherin 🐍',
+        spells: [
+          { name: 'Amortentia JEYMY 💖', color: '#FF69B4', text: '💖 ¡Amortentia para Jeymy! La poción de amor más poderosa del mundo mágico hoy celebra tu existencia. ¡Que este nuevo año esté repleto de todo el cariño que te mereces!' },
+          { name: 'Serpensortia ÉXITO 🐍', color: '#2ECC71', text: '🐍 ¡Que la astucia, audacia y grandeza de Slytherin guíen a Jeymy hacia sus metas más altas! Este año conquistarás todo lo que sueñes.' },
+          { name: 'Accio CUMPLEAÑOS 🌟', color: '#E8F8F5', text: '✨ ¡Accio Felicidad Mágica! Atrayendo directamente hacia Jeymy montones de sorpresas, regalos geniales y momentos inolvidables.' }
+        ]
+      },
+      ravenclaw: {
+        primary: '#0E1A40',
+        secondary: '#946B2D',
+        glow: 'rgba(148, 107, 45, 0.4)',
+        name: 'Ravenclaw 🦅',
+        spells: [
+          { name: 'Revelio FUTURO 📜', color: '#5DADE2', text: '📜 ¡Revelio! Desvelando un futuro extraordinario, sabio y brillante para Jeymy. ¡Que tu inteligencia y curiosidad sigan iluminando el mundo!' },
+          { name: 'Aguamenti BENDICIONES 💧', color: '#3498DB', text: '💧 ¡Aguamenti! Que una lluvia interminable de salud, alegría y paz renueve la vida de Jeymy en esta fecha tan especial. ¡Felicidades!' },
+          { name: 'Wingardium LEVIOSA 🎈', color: '#F4D03F', text: '🎈 ¡Wingardium Leviosa! Que los sueños y la alegría de Jeymy vuelen más alto que nunca en su cumpleaños. ¡Eleva tu magia al máximo!' }
+        ]
+      },
+      hufflepuff: {
+        primary: '#ECB939',
+        secondary: '#111111',
+        glow: 'rgba(236, 185, 57, 0.4)',
+        name: 'Hufflepuff 🦡',
+        spells: [
+          { name: 'Protego AMISTAD 🛡️', color: '#F5B041', text: '🛡️ ¡Protego! La lealtad y la calidez de Hufflepuff abrazan a Jeymy hoy. Gracias por ser una persona tan noble, especial y querida. ¡Muy Feliz Cumpleaños!' },
+          { name: 'Riddikulus SONRISAS 🤡', color: '#F7DC6F', text: '😄 ¡Riddikulus! Transformando cualquier contratiempo en risas de colores para Jeymy. ¡Que la felicidad nunca falte en tu día a día!' },
+          { name: 'Reparo ENERGÍA ✨', color: '#F39C12', text: '✨ ¡Reparo! Renovando todas las energías positivas para que Jeymy inicie un año de vida recargado de magia, salud y buenas noticias.' }
+        ]
+      }
+    };
+
+    let currentHouse = 'gryffindor';
+
+    function selectHouse(houseKey) {
+      currentHouse = houseKey;
+      const house = housesData[houseKey];
+
+      // Actualizar variables de tema CSS
+      document.documentElement.style.setProperty('--house-primary', house.primary);
+      document.documentElement.style.setProperty('--house-secondary', house.secondary);
+      document.documentElement.style.setProperty('--house-glow', house.glow);
+
+      // Actualizar botones activos
+      ['gryffindor', 'slytherin', 'ravenclaw', 'hufflepuff'].forEach(h => {
+        const btn = document.getElementById(`btn-${h}`);
+        if (h === houseKey) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Renderizar botones de hechizos para Jeymy
+      renderSpells();
+
+      // Efecto de chispas en el centro
+      const card = document.querySelector('.main-card');
+      const rect = card.getBoundingClientRect();
+      createExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2, house.secondary, 35);
+    }
+
+    function renderSpells() {
+      const container = document.getElementById('spell-buttons-container');
+      container.innerHTML = '';
+
+      const house = housesData[currentHouse];
+      house.spells.forEach((spell) => {
+        const btn = document.createElement('button');
+        btn.className = 'spell-btn px-4 py-2 rounded-lg text-xs md:text-sm font-semibold border transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg';
+        btn.style.backgroundColor = 'rgba(20, 15, 30, 0.85)';
+        btn.style.color = '#F0E6D2';
+        btn.style.borderColor = house.secondary;
+        btn.innerHTML = spell.name;
+        
+        btn.onclick = () => revealSpellMessage(spell.text, spell.color);
+        container.appendChild(btn);
+      });
+    }
+
+    function castInitialSpell() {
+      const wand = document.getElementById('wand');
+      const spellsSection = document.getElementById('spells-section');
+      const house = housesData[currentHouse];
+
+      // Animación de agitar varita
+      wand.classList.remove('cast-magic');
+      void wand.offsetWidth; // Force Reflow
+      wand.classList.add('cast-magic');
+
+      // Obtener punta de varita para explosión de partículas
+      const rect = wand.getBoundingClientRect();
+      const tipX = rect.right;
+      const tipY = rect.top + rect.height / 2;
+
+      createExplosion(tipX, tipY, house.secondary, 50);
+      setTimeout(() => createExplosion(tipX, tipY, '#ffffff', 25), 120);
+
+      // Desplegar la sección de hechizos si no estaba visible
+      spellsSection.classList.remove('hidden');
+      renderSpells();
+    }
+
+    function revealSpellMessage(text, color) {
+      const wand = document.getElementById('wand');
+      const display = document.getElementById('message-display');
+
+      // Agitar varita
+      wand.classList.remove('cast-magic');
+      void wand.offsetWidth;
+      wand.classList.add('cast-magic');
+
+      // Explotar destellos en la caja de mensaje
+      const rect = display.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      createExplosion(centerX, centerY, color, 45);
+
+      // Transición de texto
+      display.style.opacity = '0';
+      setTimeout(() => {
+        display.innerText = text;
+        display.style.opacity = '1';
+        display.style.borderColor = color;
+      }, 200);
+    }
+
+    // Inicializar al cargar la página
+    window.onload = function() {
+      selectHouse('gryffindor');
+    };
+  </script>
+</body>
+</html>
